@@ -4,13 +4,12 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static whm.brush.csdnandcnblogs.JsoupGetArticleUrl.getCsdnBlogsUrl;
-import static whm.brush.csdnandcnblogs.JsoupGetArticleUrl.getDoc;
+import static whm.brush.csdnandcnblogs.JsoupGetArticleUrl.getHtmlDoc;
+import static whm.brush.csdnandcnblogs.JsoupGetArticleUrl.getXmlDoc;
 
 
 /**
@@ -26,7 +25,7 @@ public class JsoupGetIp {
         List<AgencyIp> ipList = null;
         try {
             //1.向ip代理地址发起get请求，拿到代理的ip
-            Document doc = getDoc(url);
+            Document doc = getHtmlDoc(url);
 
             //2,将得到的ip地址解析除字符串
             String ipStr = doc.body().text().trim().toString();
@@ -80,7 +79,41 @@ public class JsoupGetIp {
 
                 try {
                     Thread.sleep(1000);
-                    Document doc = getDoc(blogUrl);
+                    Document doc = getHtmlDoc(blogUrl);
+                    if(doc != null) {
+                        count++;
+                        System.out.println("成功刷新次数: " + count);
+                        System.out.println("文章地址:" + blogUrl);
+//                        System.out.println("doc====================================="+doc);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 访问文章
+     * @param blogUrl
+     * @param ipList
+     */
+    public static void visitJbake(String blogUrl,List<AgencyIp> ipList){
+        int time = 100;
+        int count = 0;
+
+        for(int i = 0; i< time; i++) {
+            //2.设置ip代理
+            for(final AgencyIp AgencyIp : ipList) {
+                System.setProperty("http.maxRedirects", "50");
+                System.getProperties().setProperty("proxySet", "true");
+                System.getProperties().setProperty("http.proxyHost", AgencyIp.getAddress());
+                System.getProperties().setProperty("http.proxyPort", AgencyIp.getPort());
+                try {
+                    Thread.sleep(1000);
+                    Document doc = getXmlDoc(blogUrl);
                     if(doc != null) {
                         count++;
                         System.out.println("成功刷新次数: " + count);
@@ -97,27 +130,6 @@ public class JsoupGetIp {
     }
 
 
-    public static void main(String[] args) {
-        //1.想http代理地址api发起请求，获得想要的代理ip地址
-        String url = "http://www.xicidaili.com/nn/";
-        String foreignUrl = "http://www.kuaidaili.com/free/outha/";
-        final List<AgencyIp> ipList = getForeignIp();
-//        final List<AgencyIp> ipList = Arrays.asList(new AgencyIp("178.62.123.38","8118"));
-        ipList.addAll(getIp(url));
-
-        List<String> urls = getCsdnBlogsUrl();
-        urls.add("https://s01.flagcounter.com/map/i6UK/size_s/txt_000000/border_CCCCCC/pageviews_1/viewers_0/flags_0");
-//        List<String> urls = Arrays.asList("http://blog.csdn.net/w980994974/article/details/77718751");
-        for (final String u:urls){
-            new Thread(new Runnable() {
-
-                public void run() {
-                    System.out.println("文章地址:" + u);
-                    visit(u,ipList);
-                }
-            }).start();
-        }
-    }
     /**
      * 获取代理IP地址
      * @param

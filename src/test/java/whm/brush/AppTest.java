@@ -3,6 +3,9 @@ package whm.brush;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import whm.brush.csdnandcnblogs.JsoupGetArticleUrl;
+
+import java.util.List;
 
 /**
  * Unit test for simple App.
@@ -26,6 +29,7 @@ public class AppTest
     public static Test suite()
     {
         return new TestSuite( AppTest.class );
+
     }
 
     /**
@@ -33,6 +37,31 @@ public class AppTest
      */
     public void testApp()
     {
+        List<String> csdnBlogsUrl = JsoupGetArticleUrl.getCsdnBlogsUrl();
+        List<String> jbakeBlogsUrl = JsoupGetArticleUrl.getJbakeBlogsUrl();
+        System.out.println(jbakeBlogsUrl);
+
+
         assertTrue( true );
     }
+
+    /**
+     * Rigourous Test :-)
+     */
+    public void testAppCsdn()
+    {
+        List<String> csdnBlogsUrl = JsoupGetArticleUrl.getCsdnBlogsUrl();
+        List<String> jbakeBlogsUrl = JsoupGetArticleUrl.getJbakeBlogsUrl();
+        System.out.println(jbakeBlogsUrl);
+
+    }
+
+    /**
+     * Rigourous Test :-)
+     */
+    public void testAppJbake()
+    {
+
+    }
+
 }
